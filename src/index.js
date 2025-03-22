@@ -1,3 +1,4 @@
+const fadeTime = 1000;
 var files = $("#folderPicker")[0].files;
 var i = 0;
 
@@ -8,41 +9,69 @@ $(document).on("change", (event) => {
   }
   $("input").remove();
   $("p").remove();
-  $("#container").prepend(`<video id="video" loop="true" autoplay muted><source id="source" src=""/></video>`)
-  $("#video")[0].muted = false
+  $("ul").remove();
 });
 
 $(document).on("keydown", (e) => {
-  if (e.key === "ArrowRight") {
-    $("#video").fadeOut(1000)
-    let name, type;
-    [name, type] = nextFileNameAndType();
-    setTimeout(() => {
-      if (type.startsWith("video")) {
-        $("#video").attr("src", "./sources/" + name)
-        $("#video").attr("autoplay", "true")
-        video.load();
-        $("#video").fadeIn(1000)
-      }
-      if (type.startsWith("image")) {
-        $("#video").attr("poster", "./sources/" + name)
-        $("#video").removeAttr("autoplay")
-        video.load();
-        $("#video").fadeIn(1000)
-      }
-    }, 1000)
+  if (e.key === "ArrowRight" || e.key === "f") {
+    $("#media").fadeOut(fadeTime)
+    let relativePath, type;
+    [relativePath, type] = newFilePathAndType("forward");
+    setTimeout(loadNewMedia, fadeTime, relativePath, type);
+  }
+  else if (e.key === "ArrowLeft" || e.key === "b") {
+    $("#media").fadeOut(fadeTime)
+    let relativePath, type;
+    [relativePath, type] = newFilePathAndType("backward");
+    setTimeout(loadNewMedia, fadeTime, relativePath, type);
+  } else if (e.key === " ") {
+    videos = $("video");
+    if ($("video").length !== 0) {
+      video = $("video")[0]
+      video.paused ? video.play() : video.pause();
+    }
   }
 })
 
-function nextFileNameAndType() {
-  var name, type = "";
-  if (files.length !== 0) {
-    if (i >= files.length) {
-      i = 0
-    }
-    [name, type] = [files[i].name, files[i].type]
-    i++;
+function loadNewMedia(relativePath, type) {
+  $("#media").remove()
+  if (type.startsWith("video")) {
+    $("#container").prepend(`<video id="media" loop="true" autoplay muted><source id="source" src=""/></video>`)
+    $("#media")[0].muted = false
+    $("#media").attr("src", "./" + relativePath)
+    $("#media")[0].load();
+    $("#media").fadeIn(fadeTime)
   }
-  console.log(name, type)
-  return [name, type]
+  if (type.startsWith("image")) {
+    $("#media").remove()
+    $("#container").prepend(`<img id="media" src="" alt="media">`)
+    $("#media").attr("src", "./" + relativePath)
+    $("#media").fadeIn(fadeTime)
+  }
+}
+
+function newFilePathAndType(mode) {
+  var webkitRelativePath, type = "";
+  if (files.length !== 0) {
+    if (mode === "forward") {
+      // Increment i by 1
+      i++;
+      if (i > files.length) {
+        // If end of file list has been surpassed, reset to 1
+        i = 1
+      }
+    } else if (mode === "backward") {
+      // Reduce i by 1
+      i--;
+      if (i < 1) {
+        // If beginning of file list has been surpassed, reset to the end of list
+        i = files.length
+      }
+    } else {
+      console.log("Mode not recognised: " + mode)
+    }
+    [webkitRelativePath, type] = [files[i-1].webkitRelativePath, files[i-1].type]
+  }
+  console.log(mode, i, webkitRelativePath, type)
+  return [webkitRelativePath, type]
 }

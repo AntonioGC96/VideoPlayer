@@ -13,9 +13,19 @@
 	<noscript>
 		You need to enable JavaScript to run this app.
 	</noscript>
-	<p>Press F11 to go fullscreen</p>
+	<p>Instructions:</p>
+	<ul>
+		<li>Put media (video and images) on a folder contained within in the same folder as this html, like ./media</li>
+		<li>Press "Choose file" and select that folder</li>
+		<li>Press F11 to go fullscreen</li>
+		<li>To go forward, press "ArrowRight" or "f"</li>
+		<li>To go back, press "ArrowLeft" or "b"</li>
+		<li>To stop/start a video press "spacebar"</li>
+		<li>To exit fullscreen press F11 again</li>
+		<li>To reestart reload the page</li>
+	</ul>
+	<input id="folderPicker" type="file" webkitdirectory />
 	<div id="container">
-		<input id="folderPicker" type="file" webkitdirectory />
 	</div>
 	<script src="./src/jquery-3.7.1.min.js" charset="utf-8"></script>
 	<script src="./src/index.js" charset="utf-8"></script>
